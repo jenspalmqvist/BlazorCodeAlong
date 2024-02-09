@@ -1,0 +1,18 @@
+﻿@page "/pokemoncollection"
+@inject PokeApiClient pokeApiClient
+<h3>PokemonCollection</h3>
+
+<form @onsubmit="GetPokemon">
+	<InputNumber @bind-Value="inputId"></InputNumber>
+	<button type="submit">Get Pokemon</button>
+</form>
+
+@code {
+	public int inputId;
+
+	public List<Pokemon> PokemonList { get; set; } = new List<Pokemon>();
+	public async Task GetPokemon()
+	{
+		PokemonList.Add(await pokeApiClient.GetResourceAsync<Pokemon>(inputId));
+	}
+}
