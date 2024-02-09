@@ -1,13 +1,10 @@
 ﻿<div class="bg-image" style="
-	background-image:url(@(PokemonData.IsShiny
-					? PokemonData.PokemonData.Sprites.FrontShiny
-					: PokemonData.PokemonData.Sprites.FrontDefault
-					));
+	background-image:url(@bgImage);
 	background-size:50%; 
 	background-position: right; 
 	background-repeat:no-repeat;
-	width: 100px;
-	height:100px;">
+	width: 150px;
+	height:150px;">
 
 	<p>Name: @PokemonData?.PokemonData.Name</p>
 	<p>Id: @PokemonData?.PokemonData.Id</p>
@@ -21,8 +18,15 @@
 	[Parameter]
 	public EventCallback OnDelete { get; set; }
 
+	public string bgImage = "";
+
 	public async Task DeletePokemon()
 	{
 		await OnDelete.InvokeAsync();
+	}
+
+	protected override void OnInitialized()
+	{
+		bgImage = PokemonData.IsShiny ? PokemonData.PokemonData.Sprites.FrontShiny : PokemonData.PokemonData.Sprites.FrontDefault;
 	}
 }
