@@ -1,18 +1,60 @@
 ﻿@page "/pokemoncollection"
+
 @inject PokeApiClient pokeApiClient
+@inject ILocalStorageService localStorage
+
 <h3>PokemonCollection</h3>
 
 <form @onsubmit="GetPokemon">
-	<InputNumber @bind-Value="inputId"></InputNumber>
+	<label>
+		Pokemon id: 
+	<InputNumber @bind-Value="inputId" />
+	</label>
+	<label>
+		Shiny?
+		<InputCheckbox @bind-Value="isShiny"></InputCheckbox>
+	</label>
 	<button type="submit">Get Pokemon</button>
 </form>
 
+<div id="pokemon-grid" class="mt-5">
+	@foreach(var pokemonData in PokemonList)
+	{
+		<PokemonCard PokemonData="pokemonData" OnDelete="async () => RemovePokemon(pokemonData)"/>
+	}
+</div>
+
+
 @code {
 	public int inputId;
+	public bool isShiny;
 
-	public List<Pokemon> PokemonList { get; set; } = new List<Pokemon>();
+	public List<PokemonInfo> PokemonList { get; set; } = new List<PokemonInfo>();
+
 	public async Task GetPokemon()
 	{
-		PokemonList.Add(await pokeApiClient.GetResourceAsync<Pokemon>(inputId));
+		var pokemonResponse = await pokeApiClient.GetResourceAsync<Pokemon>(inputId);
+		PokemonList.Add(new PokemonInfo(){PokemonData = pokemonResponse, IsShiny = isShiny });
+		await localStorage.SetItemAsync<List<PokemonInfo>>("PokemonInfo", PokemonList);
+	}
+
+	public class PokemonInfo
+	{
+		public Pokemon PokemonData { get; set; }
+		public bool IsShiny { get; set; }
+	}
+
+	public async Task RemovePokemon(PokemonInfo pokemonInfo) 
+	{
+		PokemonList.Remove(pokemonInfo);
+		await localStorage.SetItemAsync<List<PokemonInfo>>("PokemonInfo", PokemonList);
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		var pokemonData = await localStorage.GetItemAsync<List<PokemonInfo>>("PokemonInfo");
+		if(pokemonData is not null){
+			PokemonList = pokemonData;
+		}
 	}
 }

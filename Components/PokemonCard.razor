@@ -1,0 +1,28 @@
+﻿<div class="bg-image" style="
+	background-image:url(@(PokemonData.IsShiny
+					? PokemonData.PokemonData.Sprites.FrontShiny
+					: PokemonData.PokemonData.Sprites.FrontDefault
+					));
+	background-size:50%; 
+	background-position: right; 
+	background-repeat:no-repeat;
+	width: 100px;
+	height:100px;">
+
+	<p>Name: @PokemonData?.PokemonData.Name</p>
+	<p>Id: @PokemonData?.PokemonData.Id</p>
+	<p>Shiny: @(PokemonData.IsShiny ? "Yes" : "No")</p>
+	<button @onclick="DeletePokemon">Delete</button>
+</div>
+
+@code {
+	[Parameter]
+	public PokemonCollection.PokemonInfo? PokemonData { get; set; }
+	[Parameter]
+	public EventCallback OnDelete { get; set; }
+
+	public async Task DeletePokemon()
+	{
+		await OnDelete.InvokeAsync();
+	}
+}
