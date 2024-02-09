@@ -1,0 +1,28 @@
+﻿@page "/catfacts"
+@inject HttpClient Http 
+
+<h3>CatFacts</h3>
+
+<ul>
+	@foreach (CatFact catFact in CatFactList){
+		<li>@catFact.Fact</li>
+	}
+</ul>
+
+<button @onclick="GetCatFact">Get new cat fact!</button>
+
+@code {
+	public List<CatFact> CatFactList { get; set; } = new List<CatFact>();
+
+	public async Task GetCatFact(){
+		var response = await Http.GetFromJsonAsync<CatFact>("https://catfact.ninja/fact");
+		// var catFact = await response.Content.ReadFromJsonAsync<CatFact>();
+		CatFactList.Add(response);
+	} 
+
+	public class CatFact
+	{
+		public string Fact { get; set; }
+		public int Length { get; set; }
+	}
+}
